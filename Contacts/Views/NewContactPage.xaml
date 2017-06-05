@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
+    x:Class="Contacts.Views.NewContactPage"
+    Title="New Contact"
+    BindingContext="{Binding Main, Source={StaticResource Locator}">
+	<ContentPage.Content>
+        <ScrollView
+            BindingContext="{Binding NewContact}">
+            <StackLayout
+                Padding="8">
+                <Label
+                    Text="First name: ">
+                </Label>
+                <Entry
+                    Placeholder="Enter first name..."
+                    Text="{Binding FirstName, Mode=TwoWay}">
+                </Entry>
+                <Label
+                    Text="Last name: ">
+                </Label>
+                <Entry
+                    Placeholder="Enter last name..."
+                    Text="{Binding LastName, Mode=TwoWay}">
+                </Entry>
+                <Label
+                    Text="Email address: ">
+                </Label>
+                <Entry
+                    Keyboard="Email"
+                    Placeholder="Enter email address..."
+                    Text="{Binding EmailAddress, Mode=TwoWay}">
+                </Entry>
+                <Label
+                    Text="Phone number">
+                </Label>
+                <Entry
+                    Placeholder="Enter phone number..."
+                    Keyboard="Telephone"
+                    Text="{Binding PhoneNumber, Mode=TwoWay}">
+                </Entry>
+                <controls:CircleImage 
+                    Source="{Binding ImageSource}" 
+                    Aspect="AspectFill">
+                </controls:CircleImage>
+
+                <ActivityIndicator
+                    IsRunning="{Binding IsRunning}">
+                </ActivityIndicator>
+                <StackLayout
+                    Orientation="Horizontal">
+                    <Button
+                        HorizontalOptions="FillAndExpand"
+                        Command="{Binding TakePictureCommand}"
+                        IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
+                        BackgroundColor="Orange"
+                        HeightRequest="40"
+                        BorderRadius="20"
+                        TextColor="White"
+                        Text="Take Picture">
+                    </Button>
+                    <Button
+                        HorizontalOptions="FillAndExpand"
+                        Command="{Binding NewContactCommand}"
+                        IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
+                        BackgroundColor="Navy"
+                        HeightRequest="40"
+                        BorderRadius="20"
+                        TextColor="White"
+                        Text="New Contact">
+                    </Button>
+                </StackLayout>
+            </StackLayout>
+        </ScrollView>
+	</ContentPage.Content>
+</ContentPage>

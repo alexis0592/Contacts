@@ -51,14 +51,25 @@ namespace Contacts.ViewModels
         #region Constructs
         public ContactsViewModel()
         {
+            instance = this;
             apiService = new ApiService();
             dialogService = new DialogService();
 
             MyContacts = new ObservableCollection<ContactItemViewModel>();
 
-            LoadContacts();
         }
+        #endregion
 
+        #region Singleton
+        static ContactsViewModel instance;
+
+        public static ContactsViewModel GetInstance(){
+            if(instance == null){
+                instance = new ContactsViewModel();   
+            }
+
+            return instance;
+        }
         #endregion
 
         #region Methods
