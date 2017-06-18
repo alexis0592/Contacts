@@ -17,6 +17,9 @@
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding EditContactCommand}"/>
+                        </Grid.GestureRecognizers>
                             <controls:CircleImage 
                                     Grid.Column="0"
                                     Source="{Binding ImageFullPath}" 

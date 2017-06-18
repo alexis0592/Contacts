@@ -13,9 +13,8 @@ using Xamarin.Forms;
 
 namespace Contacts.ViewModels
 {
-    public class NewContactViewModel : Contact, INotifyPropertyChanged
+    public class EditContactViewModel : Contact, INotifyPropertyChanged
     {
-
 		#region Events
 		public event PropertyChangedEventHandler PropertyChanged;
 		#endregion
@@ -27,11 +26,11 @@ namespace Contacts.ViewModels
 		private bool isRunning;
 		private bool isEnabled;
 		private ImageSource imageSource;
-		private MediaFile file;
         private Stream stream;
+		private MediaFile file;
         private bool isFromCamera;
         private bool isFromGallery;
-		private byte[] imageArray = null;
+        private byte[] imageArray = null;
 		#endregion
 
 		#region Properties
@@ -83,23 +82,69 @@ namespace Contacts.ViewModels
 			}
 		}
 
+
 		#endregion
 
-		#region Contructor
-		public NewContactViewModel()
-        {
-            apiService = new ApiService();
-            dialogService = new DialogService();
-            navigationService = new NavigationService();
+
+		#region Constructors
+		public EditContactViewModel(Contact contact)
+		{
+			dialogService = new DialogService();
+			apiService = new ApiService();
+			navigationService = new NavigationService();
+
+			ContactId = contact.ContactId;
+			FirstName = contact.FirstName;
+            LastName = contact.LastName;
+            Image = contact.Image;
+            EmailAddress = contact.EmailAddress;
+            PhoneNumber = contact.PhoneNumber;
 
             IsEnabled = true;
-        }
+
+		}
 		#endregion
 
 		#region Commands
-		public ICommand NewContactCommand { get { return new RelayCommand(NewContact); } }
+		public ICommand DeleteContactCommand { get { return new RelayCommand(DeleteContact); } }
 
-		private async void NewContact()
+		private async void DeleteContact()
+		{
+			var answer = await dialogService.ShowConfirm("Confirm", "Are you sure to delete this record?");
+			if (!answer)
+			{
+				return;
+			}
+
+			var contact = new Contact
+			{
+				EmailAddress = EmailAddress,
+				FirstName = FirstName,
+				LastName = LastName,
+				PhoneNumber = PhoneNumber,
+				Image = Image,
+				ContactId = ContactId,
+			};
+
+			IsRunning = true;
+			IsEnabled = false;
+			var response = await apiService.Delete("http://contactsxamarintata.azurewebsites.net",
+                                                   "/api", "/Contacts", contact);
+			IsRunning = false;
+			IsEnabled = true;
+
+			if (!response.IsSuccess)
+			{
+				await dialogService.ShowMessage("Error", response.Message);
+				return;
+			}
+
+			await navigationService.Back();
+		}
+
+		public ICommand SaveContactCommand { get { return new RelayCommand(SaveContact); } }
+
+		private async void SaveContact()
 		{
 			if (string.IsNullOrEmpty(FirstName))
 			{
@@ -113,10 +158,10 @@ namespace Contacts.ViewModels
 				return;
 			}
 
-
             if (isFromCamera && file != null){
-				imageArray = FilesHelper.ReadFully(file.GetStream());
-				file.Dispose();
+
+	            imageArray = FilesHelper.ReadFully(file.GetStream());
+	            file.Dispose();
             }
 
 			var contact = new Contact
@@ -126,13 +171,14 @@ namespace Contacts.ViewModels
 				ImageArray = imageArray,
 				LastName = LastName,
 				PhoneNumber = PhoneNumber,
+				Image = Image,
+				ContactId = ContactId,
 			};
-
 
 			IsRunning = true;
 			IsEnabled = false;
-			var response = await apiService.Post("http://contactsxamarintata.azurewebsites.net", 
-                                                 "/api", "/Contacts", contact);
+			var response = await apiService.Put("http://contactsxamarintata.azurewebsites.net", 
+                                                "/api", "/Contacts", contact);
 			IsRunning = false;
 			IsEnabled = true;
 
@@ -181,45 +227,33 @@ namespace Contacts.ViewModels
 			IsRunning = false;
 		}
 
-        public ICommand SelectPhotoCommand
+        public ICommand SelectPictureCommand
         {
-            get { return new RelayCommand(SelectPhoto); }
+            get { return new RelayCommand(SelectPicture); }
         }
 
-        private async void SelectPhoto()
+        private async void SelectPicture()
         {
-            var myStream = await DependencyService.Get<IPicturePicker>().GetImageStreamAsync();
+            Stream myStream = await DependencyService.Get<IPicturePicker>().GetImageStreamAsync();
 
-            if (myStream != null)
-			{
-                ImageSource = ImageSource.FromStream(() => myStream);
+            if(myStream != null){
+                
+                var ImageS = new Image
+                {
+                    Source = ImageSource.FromStream(() => myStream)
+                };
 
-				isFromCamera = false;
-				isFromGallery = true;
-
-                //stream = CopyStream(myStream);
+                ImageSource = ImageS.Source;
                 stream = myStream;
-                imageArray = FilesHelper.ReadFully(stream);
-			}
+
+				imageArray = FilesHelper.ReadFully(stream);
+
+                isFromCamera = false;
+                isFromGallery = true;
+            }
         }
-		#endregion
 
-		/*private static Stream CopyStream(Stream inputStream)
-		{
-			const int readSize = 256;
-			byte[] buffer = new byte[readSize];
-			MemoryStream ms = new MemoryStream();
-
-			int count = inputStream.Read(buffer, 0, readSize);
-			while (count > 0)
-			{
-				ms.Write(buffer, 0, count);
-				count = inputStream.Read(buffer, 0, readSize);
-			}
-			ms.Seek(0, SeekOrigin.Begin);
-			inputStream.Seek(0, SeekOrigin.Begin);
-			return ms;
-		}*/
+        #endregion
 
 
     }

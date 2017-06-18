@@ -62,15 +62,25 @@
                     </Button>
                     <Button
                         HorizontalOptions="FillAndExpand"
-                        Command="{Binding NewContactCommand}"
+                        Command="{Binding SelectPhotoCommand}"
                         IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
                         BackgroundColor="Navy"
                         HeightRequest="40"
                         BorderRadius="20"
                         TextColor="White"
-                        Text="New Contact">
+                        Text="Select Image">
                     </Button>
                 </StackLayout>
+                    <Button
+                        HorizontalOptions="FillAndExpand"
+                        Command="{Binding NewContactCommand}"
+                        IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
+                        BackgroundColor="Navy"
+                        HeightRequest="40"
+                        BorderRadius="20"
+                        TextColor="Maroon"
+                        Text="New Contact">
+                    </Button>
             </StackLayout>
         </ScrollView>
 	</ContentPage.Content>

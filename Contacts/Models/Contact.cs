@@ -9,7 +9,8 @@ namespace Contacts.Models
 		public string Image { get; set; }
 		public string EmailAddress { get; set; }
 		public string PhoneNumber { get; set; }
-        public string FullName
+		public byte[] ImageArray { get; set; }
+		public string FullName
         {
             get{
                 return string.Format("{0} {1}", FirstName, LastName);
