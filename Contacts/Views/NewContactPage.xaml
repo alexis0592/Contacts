@@ -78,7 +78,7 @@
                         BackgroundColor="Navy"
                         HeightRequest="40"
                         BorderRadius="20"
-                        TextColor="Maroon"
+                        TextColor="White"
                         Text="New Contact">
                     </Button>
             </StackLayout>
